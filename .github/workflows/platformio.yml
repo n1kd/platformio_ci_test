@@ -21,8 +21,8 @@ jobs:
       - name: Build Project
         run: pio run
 
-      - name: Download files
+      - name: Download firmware file
         uses: actions/download-artifact@v3
         with:
-          path: .pio/build/esp32dev/
           name: firmware.bin
+          path: .pio/build/esp32dev/firmware.bin
