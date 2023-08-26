@@ -21,8 +21,19 @@ jobs:
       - name: Build Project
         run: pio run
 
+      - name: Create full firmware
+        run: >
+          pio pkg exec -p "platformio/tool-esptoolpy" -- esptool.py 
+          --chip esp32 merge_bin -o full.bin 
+          --flash_mode dio --flash_size 4MB
+          0x0     .pio\build\esp32dev\bootloader.bin
+          0x8000  .pio\build\esp32dev\partitions.bin
+          0x10000 .pio\build\esp32dev\firmware.bin
+
       - name: Upload firmware
         uses: actions/upload-artifact@v3
         with:
           name: firmware
-          path: .pio/build/esp32dev/*.bin
+          path: |
+            .pio/build/esp32dev/*.bin
+            full.bin
