@@ -4,6 +4,8 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SHA7: ${GITHUB_SHA::7}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -39,5 +41,5 @@ jobs:
       - name: Upload full image
         uses: actions/upload-artifact@v3
         with:
-          name: full
+          name: full_${{env.SHA7}}
           path: full.bin
