@@ -26,7 +26,7 @@ jobs:
       - name: Create full firmware
         run: >
           pio pkg exec -p "platformio/tool-esptoolpy" -- esptool.py 
-          --chip esp32 merge_bin -o full.bin 
+          --chip esp32 merge_bin -o full_${{env.SHA7}}.bin 
           --flash_mode dio --flash_size 4MB
           0x1000  .pio/build/esp32dev/bootloader.bin
           0x8000  .pio/build/esp32dev/partitions.bin
@@ -41,5 +41,5 @@ jobs:
       - name: Upload full image
         uses: actions/upload-artifact@v3
         with:
-          name: full_${{env.SHA7}}
-          path: full.bin
+          name: full
+          path: full_*.bin
