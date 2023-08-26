@@ -34,6 +34,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: firmware
-          path: |
-            .pio/build/esp32dev/*.bin
-            full.bin
+          path: .pio/build/esp32dev/*.bin
+
+      - name: Upload full image
+        uses: actions/upload-artifact@v3
+        with:
+          name: full
+          path: full.bin
