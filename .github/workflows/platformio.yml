@@ -8,11 +8,19 @@ jobs:
       SHA7: ${GITHUB_SHA::7}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - name: Cache pip
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/pip
+          key: ${{ runner.os}}-pip
+      - name: Cache pio
+        uses: actions/cache@v3
+        with:
+          path: |
             ~/.platformio/.cache
+            ~/.platformio/packages
+            ~/.platformio/platforms
           key: ${{ runner.os}}-pio
       - uses: actions/setup-python@v4
         with:
