@@ -4,8 +4,6 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      SHA7: ${GITHUB_SHA::7}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -23,6 +21,12 @@ jobs:
       - name: Build Project
         run: pio run
 
+  firmware:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      SHA7: ${GITHUB_SHA::7}
+    steps:
       - name: Create full firmware
         run: >
           pio pkg exec -p "platformio/tool-esptoolpy" -- esptool.py 
