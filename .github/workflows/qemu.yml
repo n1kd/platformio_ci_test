@@ -2,14 +2,12 @@ name: Qemu
 run-name:
 on: [push]
 
-env:
-  QEMU_REL: esp-develop-20220919
-  QEMU_DIST: qemu-$QEMU_REL.tar.bz2
-  QEMU_URL: https://github.com/espressif/qemu/releases/download/$QEMU_REL/$QEMU_DIST
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      QEMU_REL: esp-develop-20220919
     steps:
       - uses: actions/checkout@v3
       - name: Cache qemu
@@ -19,9 +17,12 @@ jobs:
               qemu/
             key: ${{runner.os}}-qemu
       - name: Download qemu
+        env:
+          QEMU_DIST: qemu-${{env.QEMU_REL}}.tar.bz2
+          QEMU_URL: https://github.com/espressif/qemu/releases/download/${{env.QEMU_REL}}/${{env.QEMU_DIST}}
         run: >
           wget $QEMU_URL
-          && tar -xf $QEMU_DIST
+          && tar -xf ${{env.QEMU_DIST}}
           && rm $QEMU_DIST
 
       - name: Add Path
