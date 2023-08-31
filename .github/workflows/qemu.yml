@@ -32,4 +32,32 @@ jobs:
       - name: Call qemu
         run: qemu-system-xtensa -version
 
+      - name: Cache pio
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.platformio/.cache
+            ~/.platformio/packages
+            ~/.platformio/platforms
+          key: ${{ runner.os}}-pio
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install Core Pio
+        run: pip install --upgrade platformio
+
+      - name: Build test firmware
+        run: pio test --without-uploading --without-testing
+
+      - name: Create flash.bin
+        run: >
+          pio pkg exec -p "platformio/tool-esptoolpy" -- esptool.py 
+          --chip esp32 merge_bin -o flash.bin 
+          --flash_mode dio --fill-flash-size 4MB
+          0x1000  .pio/build/esp32dev/bootloader.bin
+          0x8000  .pio/build/esp32dev/partitions.bin
+          0x10000 .pio/build/esp32dev/firmware.bin
+
+      - name: Run test firmware
+        run: qemu-system-xtensa -nographic -no-reboot -machine esp32 -drive file=flash.bin,if=mtd,format=raw
 
