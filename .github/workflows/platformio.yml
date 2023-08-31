@@ -1,8 +1,67 @@
 name: Platformio
 run-name:
 on: [push]
+
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      QEMU_REL: esp-develop-8.0.0-20230522
+      QEMU_FIL: develop_8.0.0_20230522
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache qemu
+        uses: actions/cache@v3
+        with:
+            path: |
+              qemu/
+            key: ${{runner.os}}-qemu
+      - name: Download qemu
+        env:
+          QEMU_DIST: esp-qemu-xtensa-softmmu-${{env.QEMU_FIL}}-x86_64-linux-gnu.tar.bz2
+          QEMU_URL: 'https://github.com/espressif/qemu/releases/download/${{env.QEMU_REL}}'
+        run: >
+          wget ${{env.QEMU_URL}}/${{env.QEMU_DIST}}
+          && tar -xf ${{env.QEMU_DIST}}
+          && rm ${{env.QEMU_DIST}}
+
+      - name: Add Path
+        run: echo "$GITHUB_WORKSPACE/qemu/bin" >> $GITHUB_PATH
+
+      - name: Call qemu
+        run: qemu-system-xtensa -version
+
+      - name: Cache pio
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.platformio/.cache
+            ~/.platformio/packages
+            ~/.platformio/platforms
+          key: ${{ runner.os}}-pio
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install Core Pio
+        run: pip install --upgrade platformio
+
+      - name: Build test firmware
+        run: pio test --without-uploading --without-testing
+
+      - name: Create flash.bin
+        run: >
+          pio pkg exec -p "platformio/tool-esptoolpy" -- esptool.py 
+          --chip esp32 merge_bin -o flash.bin 
+          --flash_mode dio --fill-flash-size 4MB
+          0x1000  .pio/build/esp32dev/bootloader.bin
+          0x8000  .pio/build/esp32dev/partitions.bin
+          0x10000 .pio/build/esp32dev/firmware.bin
+
+      - name: Run test firmware
+        run: qemu-system-xtensa -nographic -no-reboot -machine esp32 -drive file=flash.bin,if=mtd,format=raw
+
   build:
+    needs: tests
     runs-on: ubuntu-latest
     env:
       SHA7: ${GITHUB_SHA::7}
