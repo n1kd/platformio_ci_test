@@ -45,12 +45,14 @@ jobs:
         with:
           python-version: '3.10'
       - name: Install Core Pio
+        run: pip install --upgrade platformio
 
-        run: |
-          pip install --upgrade platformio
-          && which pio
-          && find -name "pio"
-          && find -name "platformio"
+      - name: which
+        run: which pio
+      - name: find1 
+        run: find -name "pio"
+      - name: find2
+        run: find -name "platformio"
 
       - name: Add pio Path
         run: echo "~/.platformio/penv/bin" >> $GITHUB_PATH
