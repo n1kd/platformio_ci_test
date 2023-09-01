@@ -9,12 +9,13 @@ void test_dummy(void)
 
 void app_main()
 {
+  __attribute__((unused)) int result;
   UNITY_BEGIN();
 
   RUN_TEST(test_dummy);
   RUN_TEST(test_dummy);
   RUN_TEST(test_dummy);
 
-  int res = UNITY_END();
+  result = UNITY_END();
   esp_restart();
 }
