@@ -48,9 +48,9 @@ jobs:
 
         run: |
           pip install --upgrade platformio
-          which pio
-          find -name "pio"
-          find -name "platformio"
+          && which pio
+          && find -name "pio"
+          && find -name "platformio"
 
       - name: Add pio Path
         run: echo "~/.platformio/penv/bin" >> $GITHUB_PATH
