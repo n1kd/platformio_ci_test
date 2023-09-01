@@ -46,19 +46,7 @@ jobs:
         run: pip install --upgrade platformio
 
       - name: Build test firmware
-        run: pio test --without-uploading --without-testing
-
-      - name: Create flash.bin
-        run: >
-          pio pkg exec -p "platformio/tool-esptoolpy" -- esptool.py 
-          --chip esp32 merge_bin -o flash.bin 
-          --flash_mode dio --fill-flash-size 4MB
-          0x1000  .pio/build/esp32dev/bootloader.bin
-          0x8000  .pio/build/esp32dev/partitions.bin
-          0x10000 .pio/build/esp32dev/firmware.bin
-
-      - name: Run test firmware
-        run: qemu-system-xtensa -nographic -no-reboot -machine esp32 -drive file=flash.bin,if=mtd,format=raw
+        run: pio test -e qemu --without-uploading
 
   build:
     needs: tests
@@ -88,7 +76,7 @@ jobs:
         run: pip install --upgrade platformio
 
       - name: Build Project
-        run: pio run
+        run: pio run -e esp32dev
 
       - name: Create full firmware
         run: >
