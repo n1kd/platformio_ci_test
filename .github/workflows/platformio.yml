@@ -41,7 +41,8 @@ jobs:
             ~/.platformio/.cache
             ~/.platformio/packages
             ~/.platformio/platforms
-            .pio/build/
+            ~/.platformio/penv
+            .pio/build
           key: ${{ runner.os}}-pio
       - uses: actions/setup-python@v4
         with:
