@@ -11,6 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Cache qemu
+        id: qemu_cache
         uses: actions/cache@v3
         with:
             path: |
@@ -20,6 +21,7 @@ jobs:
         env:
           QEMU_DIST: esp-qemu-xtensa-softmmu-${{env.QEMU_FIL}}-x86_64-linux-gnu.tar.bz2
           QEMU_URL: 'https://github.com/espressif/qemu/releases/download/${{env.QEMU_REL}}'
+        if: steps.qemu_cache.outputs.cache-hit != 'true'
         run: >
           wget ${{env.QEMU_URL}}/${{env.QEMU_DIST}}
           && tar -xf ${{env.QEMU_DIST}}
